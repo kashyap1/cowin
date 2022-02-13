@@ -1,6 +1,196 @@
 import Head from 'next/head'
+const BASE_URL = "https://cdn-api.co-vin.in/api/v2/";
+const CITIES = [
+ /* {
+    "district_id": 154,
+    "district_name": "Ahmedabad"
+  },
+  {
+    "district_id": 770,
+    "district_name": "Ahmedabad Corporation"
+  },*/
+  {
+    "district_id": 174,
+    "district_name": "Amreli"
+  },
+ /* {
+    "district_id": 179,
+    "district_name": "Anand"
+  },
+  {
+    "district_id": 158,
+    "district_name": "Aravalli"
+  },
+  {
+    "district_id": 159,
+    "district_name": "Banaskantha"
+  },
+  {
+    "district_id": 180,
+    "district_name": "Bharuch"
+  },*/
+  {
+    "district_id": 175,
+    "district_name": "Bhavnagar"
+  },
+  {
+    "district_id": 771,
+    "district_name": "Bhavnagar Corporation"
+  },
+  /*{
+    "district_id": 176,
+    "district_name": "Botad"
+  },
+  {
+    "district_id": 181,
+    "district_name": "Chhotaudepur"
+  },
+  {
+    "district_id": 182,
+    "district_name": "Dahod"
+  },
+  {
+    "district_id": 163,
+    "district_name": "Dang"
+  },*/
+  {
+    "district_id": 168,
+    "district_name": "Devbhumi Dwaraka"
+  },
+  /*{
+    "district_id": 153,
+    "district_name": "Gandhinagar"
+  },
+  {
+    "district_id": 772,
+    "district_name": "Gandhinagar Corporation"
+  },*/
+  {
+    "district_id": 177,
+    "district_name": "Gir Somnath"
+  },
+  {
+    "district_id": 169,
+    "district_name": "Jamnagar"
+  },
+  {
+    "district_id": 773,
+    "district_name": "Jamnagar Corporation"
+  },
+  {
+    "district_id": 178,
+    "district_name": "Junagadh"
+  },
+  {
+    "district_id": 774,
+    "district_name": "Junagadh Corporation"
+  },
+  /*{
+    "district_id": 156,
+    "district_name": "Kheda"
+  },
+  {
+    "district_id": 170,
+    "district_name": "Kutch"
+  },
+  {
+    "district_id": 183,
+    "district_name": "Mahisagar"
+  },
+  {
+    "district_id": 160,
+    "district_name": "Mehsana"
+  },
+  {
+    "district_id": 171,
+    "district_name": "Morbi"
+  },
+  {
+    "district_id": 184,
+    "district_name": "Narmada"
+  },
+  {
+    "district_id": 164,
+    "district_name": "Navsari"
+  },
+  {
+    "district_id": 185,
+    "district_name": "Panchmahal"
+  },
+  {
+    "district_id": 161,
+    "district_name": "Patan"
+  },*/
+  {
+    "district_id": 172,
+    "district_name": "Porbandar"
+  },
+  {
+    "district_id": 173,
+    "district_name": "Rajkot"
+  },
+  {
+    "district_id": 775,
+    "district_name": "Rajkot Corporation"
+  },
+  /*{
+    "district_id": 162,
+    "district_name": "Sabarkantha"
+  },
+  {
+    "district_id": 165,
+    "district_name": "Surat"
+  },
+  {
+    "district_id": 776,
+    "district_name": "Surat Corporation"
+  },
+  {
+    "district_id": 157,
+    "district_name": "Surendranagar"
+  },
+  {
+    "district_id": 166,
+    "district_name": "Tapi"
+  },
+  {
+    "district_id": 155,
+    "district_name": "Vadodara"
+  },
+  {
+    "district_id": 777,
+    "district_name": "Vadodara Corporation"
+  },
+  {
+    "district_id": 167,
+    "district_name": "Valsad"
+  }*/
+];
+function formatData(data, dates) {
+  const renderDatesHeader = dates.map(date => (<th>{date}</th>));
+  const rows = [];
+  data.forEach(datum => {
+    const address = `${datum.name}
+    ${datum.address}
+    ${datum.block_name}
+    ${datum.district_name}
+    ${datum.pincode}`;
+     const tr = dates.map(date => {
+     const rec = datum.sessions.find((sess) => date === sess.date);
+      return rec ? (<td>D1:{rec.available_capacity_dose1} D2:{rec.available_capacity_dose2}</td>) : (<td></td>);
+    });
+    rows.push(<tr key={datum.center_id}><td><address>{address}</address></td>{tr}</tr>);
+});
 
-export default function Home() {
+  return {header: renderDatesHeader, rows};
+}
+export default function Home({data, dates}) {
+
+  let header = "", rows = (<tr><td>No slots available.</td></tr>);
+  if(data.length) {
+    ({header, rows} = formatData(data, dates));
+  }
+
   return (
     <div className="container">
       <Head>
@@ -10,54 +200,21 @@ export default function Home() {
 
       <main>
         <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to cowin explorer
         </h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Address</th>
+              {header}
+            </tr>
+          </thead>
+          <tbody>
+           {rows}
+          </tbody>
+        </table>
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
       </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
-        </a>
-      </footer>
 
       <style jsx>{`
         .container {
@@ -206,4 +363,30 @@ export default function Home() {
       `}</style>
     </div>
   )
+}
+
+export async function getServerSideProps() {
+  const cities = CITIES.map(({district_id}) => district_id);
+  const date = new Date();
+  const today = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+  const res = await Promise.allSettled(cities.map((city) => fetch(`${BASE_URL}appointment/sessions/public/calendarByDistrict?district_id=${city}&date=${today}`, {mode: 'no-cors'})));
+
+  const data = await Promise.allSettled(res.map(d =>  d.status === 'fulfilled' ? d.value.json() : null));
+  const dates = [];
+  const centers = data.map(({value}) => value.centers);
+  const dataFilteredByAge = centers[0]?.filter(data => {
+    const isSlotAvailable = data.sessions && data.sessions.some(
+        ({available_capacity_dose2, min_age_limit, vaccine}) => min_age_limit === 18 && vaccine === "COVAXIN" && available_capacity_dose2 > 0
+    );
+    if(isSlotAvailable) {
+        data.sessions.forEach(({date}) => { dates.push(date); });
+    }
+    return isSlotAvailable;
+  });
+  return {
+    props: {
+      data: dataFilteredByAge,
+      dates: Array.from(new Set(dates))
+    }, // will be passed to the page component as props
+  }
 }
